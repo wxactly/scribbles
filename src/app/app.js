@@ -2,6 +2,7 @@ angular.module( 'scribbles', [
   'templates-app',
   'templates-common',
   'scribbles.index',
+  'scribbles.scribble',
   'ui.router'
 ])
 .config( function myAppConfig ( $stateProvider, $urlRouterProvider ) {
