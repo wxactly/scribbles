@@ -1,8 +1,10 @@
 angular.module('scribbles', [
   'templates-app',
   'templates-common',
+  'angular-p5',
   'scribbles.index',
   'scribbles.scribble',
+  'scribbles.sketches',
   'ui.router'
 ])
 .config(function($stateProvider, $urlRouterProvider) {
