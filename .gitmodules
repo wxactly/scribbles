@@ -1,0 +1,3 @@
+[submodule "src/common/angular-p5"]
+	path = src/common/angular-p5
+	url = https://github.com/wxactly/angular-p5.js.git
