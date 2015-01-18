@@ -1,7 +1,14 @@
-describe( 'index', function() {
-  beforeEach( module( 'scribbles.index' ) );
+describe('index', function() {
+  beforeEach(module('scribbles.index'));
+  beforeEach(module('scribbles.sketches'));
 
-  it( 'should have a dummy test', inject( function() {
-    expect( true ).toBeTruthy();
-  }));
+  describe('IndexCtrl', function() {
+    it('should have a sketch list', inject(function($controller, sketchList) {
+      var scope = {};
+      var scribbleCtrl = $controller('IndexCtrl', {
+        $scope: scope
+      });
+      expect(scope.sketchList).toEqual(sketchList);
+    }));
+  });
 });

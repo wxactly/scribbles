@@ -1,4 +1,9 @@
-angular.module('scribbles.sketches', [])
+angular.module('scribbles.sketches')
+.run(function(sketchList) {
+  sketchList.push({
+    name: 'one'
+  });
+})
 .factory('one', function(p5) {
   return function(sketch) {
     var points;

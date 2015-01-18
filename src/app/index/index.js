@@ -1,8 +1,8 @@
-angular.module( 'scribbles.index', [
+angular.module('scribbles.index', [
   'ui.router'
 ])
-.config(function config( $stateProvider ) {
-  $stateProvider.state( 'index', {
+.config(function($stateProvider) {
+  $stateProvider.state('index', {
     url: '/',
     views: {
       "main": {
@@ -10,9 +10,11 @@ angular.module( 'scribbles.index', [
         templateUrl: 'index/index.tpl.html'
       }
     },
-    data:{ pageTitle: 'Home' }
+    data: {
+      pageTitle: 'Home'
+    }
   });
 })
-.controller( 'IndexCtrl', function IndexCtrl( $scope ) {
-	
+.controller('IndexCtrl', function($scope, sketchList) {
+	$scope.sketchList = sketchList;
 });
