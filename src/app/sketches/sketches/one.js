@@ -4,9 +4,9 @@ angular.module('scribbles.sketches')
     name: 'one'
   });
 })
-.factory('one', function(p5) {
+.factory('one', function(p5, scribblerFactory) {
   return function(sketch) {
-    var points;
+    var scribblers;
   
     sketch.setup = function() {
       sketch.createCanvas(512, 512);
@@ -14,21 +14,22 @@ angular.module('scribbles.sketches')
       sketch.background(255);
       sketch.stroke(0);
 
-      points = _.times(128, function() {
-        return new p5.Vector(sketch.random(0, sketch.width), sketch.random(0, sketch.height));
-      });
+      scribblers = _.chain(_.times(128))
+        .map(function() {
+          return sketch.createVector(sketch.random(sketch.width), sketch.random(sketch.height));
+        })
+        .map(function(point) {
+          return scribblerFactory(sketch, point);
+        })
+        .invoke('active', function() {
+          return sketch.frameCount < 128;
+        })
+        .invoke('angle', _.partial(sketch.random, sketch.TWO_PI))
+        .invoke('magnitude', 16);
     };
 
     sketch.draw = function() {
-      if(sketch.frameCount > 128) {
-        sketch.noLoop();
-        return;
-      }
-      _.forEach(points, function(point) {
-        var newPoint = p5.Vector.add(point, p5.Vector.random2D().setMag(16));
-        sketch.line(point.x, point.y, newPoint.x, newPoint.y);
-        point.set(newPoint);
-      });
+      scribblers.invoke('draw');
     };
   };
 });

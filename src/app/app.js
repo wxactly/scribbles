@@ -2,6 +2,7 @@ angular.module('scribbles', [
   'templates-app',
   'templates-common',
   'angular-p5',
+  'scribbler',
   'scribbles.index',
   'scribbles.scribble',
   'scribbles.sketches',

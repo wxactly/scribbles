@@ -15,6 +15,6 @@ angular.module('scribbles.scribble', [
     }
   });
 })
-.controller('ScribbleCtrl', function($scope, $stateParams, $injector) {
+.controller('ScribbleCtrl', function($scope, $stateParams) {
   $scope.sketchName = $stateParams.sketchName;
 });
