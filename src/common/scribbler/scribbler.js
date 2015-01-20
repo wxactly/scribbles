@@ -52,4 +52,37 @@ angular.module('scribbler', [])
     
     return obj;
   };
+})
+.factory('scribblerValueGenerator', function() {
+  return {
+    random: function(min, max) {
+      return function() {
+        return this.sketch.random(min, max);
+      };
+    },
+    
+    randomGaussian: function(mean, sd) {
+      return function() {
+        return this.sketch.randomGaussian(mean, sd);
+      };
+    },
+    
+    sin: function(scale, start, stop) {
+      return function() {
+        return this.sketch.sin(this.sketch.map(this.sketch.frameCount * scale, -1, 1, start, stop));
+      };
+    },
+    
+    cos: function(scale, start, stop) {
+      return function() {
+        return this.sketch.cos(this.sketch.map(this.sketch.frameCount * scale, -1, 1, start, stop));
+      };
+    },
+    
+    tan: function(scale, start, stop) {
+      return function() {
+        return this.sketch.tan(this.sketch.map(this.sketch.frameCount * scale, -1, 1, start, stop));
+      };
+    }
+  };
 });

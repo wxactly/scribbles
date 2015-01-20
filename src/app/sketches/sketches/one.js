@@ -4,7 +4,7 @@ angular.module('scribbles.sketches')
     name: 'one'
   });
 })
-.factory('one', function(p5, scribblerFactory) {
+.factory('one', function(p5, scribblerFactory, scribblerValueGenerator) {
   return function(sketch) {
     var scribblers;
   
@@ -25,7 +25,7 @@ angular.module('scribbles.sketches')
             .active(function() {
               return sketch.frameCount < 128;
             })
-            .angle(_.partial(sketch.random, sketch.TWO_PI))
+            .angle(scribblerValueGenerator.randomGaussian(0, sketch.PI))
             .magnitude(16);
         });
     };
