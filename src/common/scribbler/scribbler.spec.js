@@ -2,58 +2,71 @@ describe('scribbler', function() {
   beforeEach(module('angular-p5'));
   beforeEach(module('scribbler'));
 
+  var scribblerFactory;
+  var sketch;
+
+  beforeEach(inject(function(_scribblerFactory_, p5) {
+    scribblerFactory = _scribblerFactory_;
+    sketch = new p5(angular.noop);
+  }));
+
   describe('scribblerFactory', function() {
-    it('should return an instantiated scribbler', inject(function(scribblerFactory) {
-      var point = {};
-      var delta = {};
-      
-      var scribbler = scribblerFactory({}, point, delta);
+    it('should return an instantiated scribbler', function() {
+      var properties = {
+        point: {},
+        delta: {}
+      };
+      var scribbler = scribblerFactory(sketch, properties);
       
       expect(angular.isFunction(scribbler.draw)).toBe(true);
-      expect(scribbler.point).toBe(point);
-      expect(scribbler.delta).toBe(delta);
-    }));
+      expect(scribbler.sketch).toBe(sketch);
+      expect(scribbler.point).toBe(properties.point);
+      expect(scribbler.delta).toBe(properties.delta);
+    });
+  });
+  
+  describe('calc', function() {
+    it('should execute callbacks and calculate fresh values', function() {
+      var scribbler = scribblerFactory(sketch);
+      
+      var i = 0;
+      scribbler.magnitude(function() {
+        return i++;
+      });
+      
+      expect(scribbler.calc('magnitude')).toBe(0);
+      expect(scribbler.calc('magnitude')).toBe(1);
+      expect(scribbler.calc('magnitude')).toBe(2);
+    });
   });
   
   describe('active', function() {
-    it('should handle constants and callbacks', inject(function(scribblerFactory) {
-      var scribbler = scribblerFactory({}, {}, {});
+    it('should set value', function() {
+      var scribbler = scribblerFactory(sketch);
       
-      scribbler.active(false);
-      expect(scribbler.calc('active')).toBe(false);
+      expect(scribbler.active(false).calc('active')).toBe(false);
       
-      scribbler.active(function() {
-        return true;
-      });
-      expect(scribbler.calc('active')).toBe(true);
-    }));
+      expect(scribbler.active(true).calc('active')).toBe(true);
+    });
   });
   
   describe('angle', function() {
-    it('should handle constants and callbacks', inject(function(scribblerFactory) {
-      var scribbler = scribblerFactory({}, {}, {});
+    it('should set value', function() {
+      var scribbler = scribblerFactory(sketch);
       
-      scribbler.angle(3.14);
-      expect(scribbler.calc('angle')).toBe(3.14);
+      expect(scribbler.angle(3.14).calc('angle')).toBe(3.14);
       
-      scribbler.angle(function() {
-        return 1.57;
-      });
-      expect(scribbler.calc('angle')).toBe(1.57);
-    }));
+      expect(scribbler.angle(1.57).calc('angle')).toBe(1.57);
+    });
   });
   
   describe('magnitude', function() {
-    it('should handle constants and callbacks', inject(function(scribblerFactory) {
-      var scribbler = scribblerFactory({}, {}, {});
+    it('should set value', function() {
+      var scribbler = scribblerFactory(sketch);
       
-      scribbler.magnitude(5);
-      expect(scribbler.calc('magnitude')).toBe(5);
+      expect(scribbler.magnitude(5).calc('magnitude')).toBe(5);
       
-      scribbler.magnitude(function() {
-        return 25;
-      });
-      expect(scribbler.calc('magnitude')).toBe(25);
-    }));
+      expect(scribbler.magnitude(25).calc('magnitude')).toBe(25);
+    });
   });
 });

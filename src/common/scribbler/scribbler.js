@@ -2,22 +2,23 @@ angular.module('scribbler', [])
 .factory('scribblerFactory', function(p5) {
   var scribbler = {
     active: function(active) {
-      this.properties.active = active;
+      this.attributes.active = active;
       return this;
     },
     
     angle: function(angle) {
-      this.properties.angle = angle;
+      this.attributes.angle = angle;
       return this;
     },
     
     magnitude: function(magnitude) {
-      this.properties.magnitude = magnitude;
+      this.attributes.magnitude = magnitude;
       return this;
     },
     
-    calc: function(property) {
-      return _.result(this.properties, property);
+    calc: function(attribute) {
+      var value = this.attributes[attribute];
+      return _.isFunction(value) ? value.apply(this) : value;
     },
     
     draw: function() {
@@ -37,14 +38,18 @@ angular.module('scribbler', [])
     }
   };
   
-  return function(sketch, point, delta) {
+  return function(sketch, properties) {
     var obj = Object.create(scribbler);
-    obj.properties = {};
+    obj.attributes = {};
     
     obj.sketch = sketch;
-    obj.point = point || sketch.createVector(0, 0);
-    obj.delta = delta || sketch.createVector(0, 0);
     
-    return obj.active(true);
+    _.defaults(obj, properties);
+    _.defaults(obj, {
+      point: sketch.createVector(0, 0),
+      delta: sketch.createVector(0, 0)
+    });
+    
+    return obj;
   };
 });

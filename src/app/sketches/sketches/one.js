@@ -16,16 +16,18 @@ angular.module('scribbles.sketches')
 
       scribblers = _.chain(_.times(128))
         .map(function() {
-          return sketch.createVector(sketch.random(sketch.width), sketch.random(sketch.height));
+          return scribblerFactory(sketch, {
+            point: sketch.createVector(sketch.random(sketch.width), sketch.random(sketch.height))
+          });
         })
-        .map(function(point) {
-          return scribblerFactory(sketch, point);
-        })
-        .invoke('active', function() {
-          return sketch.frameCount < 128;
-        })
-        .invoke('angle', _.partial(sketch.random, sketch.TWO_PI))
-        .invoke('magnitude', 16);
+        .map(function(scribbler) {
+          return scribbler
+            .active(function() {
+              return sketch.frameCount < 128;
+            })
+            .angle(_.partial(sketch.random, sketch.TWO_PI))
+            .magnitude(16);
+        });
     };
 
     sketch.draw = function() {
