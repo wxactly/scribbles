@@ -1,41 +1,46 @@
+/**
+ * TODO: documentation
+ * TODO: factor out the sketch?
+ */
 angular.module('scribbler', [])
 .factory('scribblerFactory', function(p5) {
-  var scribbler = {
-    active: function(active) {
-      this.attributes.active = active;
-      return this;
-    },
-    
-    angle: function(angle) {
-      this.attributes.angle = angle;
-      return this;
-    },
-    
-    magnitude: function(magnitude) {
-      this.attributes.magnitude = magnitude;
-      return this;
-    },
-    
-    calc: function(attribute) {
-      var value = this.attributes[attribute];
-      return _.isFunction(value) ? value.apply(this) : value;
-    },
-    
-    draw: function() {
-      if(this.calc('active')) {
-        var point = p5.Vector.add(this.point, this.delta);
-        var delta = p5.Vector.fromAngle(this.delta.heading() + this.calc('angle'))
-          .setMag(this.calc('magnitude'));
-      
-        var nextPoint = p5.Vector.add(point, delta);
-      
-        this.sketch.line(point.x, point.y, nextPoint.x, nextPoint.y);
-      
-        this.point = point;
-        this.delta = delta;
-      }
-      return this;
+  function setAttribute(attribute, value) {
+    if(_.isFunction(value)) {
+      this.attributes[attribute] = _.partial.apply(null, _.rest(arguments));
     }
+    else {
+      this.attributes[attribute] = _.constant(value);
+    }
+    return this;
+  }
+  
+  function calc(attribute) {
+    return this.attributes[attribute]();
+  }
+  
+  function draw() {
+    _.chain(this.scribbles)
+      .filter(function(scribble) {
+        return this.calc('active');
+      }, this)
+      .forEach(function(scribble) {
+        var offset = p5.Vector.fromAngle(this.calc('angle'))
+          .setMag(this.calc('magnitude'));
+        var nextPoint = p5.Vector.add(scribble.point, offset);
+
+        this.sketch.line(scribble.point.x, scribble.point.y, nextPoint.x, nextPoint.y);
+
+        scribble.point = nextPoint;
+      }, this);
+    return this;
+  }
+  
+  var scribbler = {
+    angle: _.partial(setAttribute, 'angle'),
+    magnitude: _.partial(setAttribute, 'magnitude'),
+    active: _.partial(setAttribute, 'active'),
+    calc: calc,
+    draw: draw
   };
   
   return function(sketch, properties) {
@@ -44,45 +49,22 @@ angular.module('scribbler', [])
     
     obj.sketch = sketch;
     
-    _.defaults(obj, properties);
-    _.defaults(obj, {
-      point: sketch.createVector(0, 0),
-      delta: sketch.createVector(0, 0)
+    obj.angle(sketch.random, -sketch.PI, sketch.PI)
+      .magnitude(16)
+      .active(true);
+    
+    properties = _.assign({
+      x: _.constant(sketch.width / 2),
+      y: _.constant(sketch.height / 2),
+      count: _.constant(1)
+    }, properties);
+    
+    obj.scribbles = _.map(_.times(properties.count()), function(index) {
+      return {
+        point: sketch.createVector(properties.x(), properties.y())
+      };
     });
     
     return obj;
-  };
-})
-.factory('scribblerValueGenerator', function() {
-  return {
-    random: function(min, max) {
-      return function() {
-        return this.sketch.random(min, max);
-      };
-    },
-    
-    randomGaussian: function(mean, sd) {
-      return function() {
-        return this.sketch.randomGaussian(mean, sd);
-      };
-    },
-    
-    sin: function(scale, start, stop) {
-      return function() {
-        return this.sketch.sin(this.sketch.map(this.sketch.frameCount * scale, -1, 1, start, stop));
-      };
-    },
-    
-    cos: function(scale, start, stop) {
-      return function() {
-        return this.sketch.cos(this.sketch.map(this.sketch.frameCount * scale, -1, 1, start, stop));
-      };
-    },
-    
-    tan: function(scale, start, stop) {
-      return function() {
-        return this.sketch.tan(this.sketch.map(this.sketch.frameCount * scale, -1, 1, start, stop));
-      };
-    }
   };
 });

@@ -13,15 +13,13 @@ describe('scribbler', function() {
   describe('scribblerFactory', function() {
     it('should return an instantiated scribbler', function() {
       var properties = {
-        point: {},
-        delta: {}
+        x: _.constant(0),
+        y: _.constant(0)
       };
       var scribbler = scribblerFactory(sketch, properties);
       
       expect(angular.isFunction(scribbler.draw)).toBe(true);
       expect(scribbler.sketch).toBe(sketch);
-      expect(scribbler.point).toBe(properties.point);
-      expect(scribbler.delta).toBe(properties.delta);
     });
   });
   
