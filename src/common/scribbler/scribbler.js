@@ -59,7 +59,7 @@ angular.module('scribbler', [])
       count: _.constant(1)
     }, properties);
     
-    obj.scribbles = _.map(_.times(properties.count()), function(index) {
+    obj.scribbles = _.times(properties.count(), function(index) {
       return {
         point: sketch.createVector(properties.x(), properties.y())
       };

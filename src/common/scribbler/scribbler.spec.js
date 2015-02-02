@@ -36,6 +36,36 @@ describe('scribbler', function() {
       expect(scribbler.calc('magnitude')).toBe(1);
       expect(scribbler.calc('magnitude')).toBe(2);
     });
+    
+    it('should accept arguments and pass them to callbacks', function() {
+      var scribbler = scribblerFactory(sketch);
+      
+      var testObj = {};
+      var testValue = 3;
+      
+      var magnitudeSpy = jasmine.createSpy('magnitudeSpy').andReturn(testValue);
+      scribbler.magnitude(magnitudeSpy, testObj);
+      
+      var magnitude = scribbler.calc('magnitude');
+      
+      expect(magnitudeSpy).toHaveBeenCalledWith(testObj);
+      expect(magnitude).toEqual(testValue);
+    });
+  });
+  
+  describe('count', function() {
+    it('should create the correct number of scribbles', function() {
+      var scribbler = scribblerFactory(sketch, {
+        count: _.constant(11)
+      });
+      
+      var activeSpy = jasmine.createSpy('activeSpy').andReturn(false);
+      scribbler.active(activeSpy);
+      
+      scribbler.draw();
+      
+      expect(activeSpy.calls.length).toEqual(11);
+    });
   });
   
   describe('active', function() {
