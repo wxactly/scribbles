@@ -2,22 +2,18 @@ describe('scribbler', function() {
   beforeEach(module('angular-p5'));
   beforeEach(module('scribbler'));
 
-  var scribblerFactory;
   var sketch;
+  var scribbler;
 
-  beforeEach(inject(function(_scribblerFactory_, p5) {
-    scribblerFactory = _scribblerFactory_;
+  beforeEach(inject(function(scribblerFactory, p5) {
     sketch = new p5(angular.noop);
+    spyOn(sketch, 'line');
+    
+    scribbler = scribblerFactory(sketch);
   }));
 
   describe('scribblerFactory', function() {
     it('should return an instantiated scribbler', function() {
-      var properties = {
-        x: _.constant(0),
-        y: _.constant(0)
-      };
-      var scribbler = scribblerFactory(sketch, properties);
-      
       expect(angular.isFunction(scribbler.draw)).toBe(true);
       expect(scribbler.sketch).toBe(sketch);
     });
@@ -25,8 +21,6 @@ describe('scribbler', function() {
   
   describe('calc', function() {
     it('should execute callbacks and calculate fresh values', function() {
-      var scribbler = scribblerFactory(sketch);
-      
       var i = 0;
       scribbler.magnitude(function() {
         return i++;
@@ -38,8 +32,6 @@ describe('scribbler', function() {
     });
     
     it('should accept arguments and pass them to callbacks', function() {
-      var scribbler = scribblerFactory(sketch);
-      
       var testObj = {};
       var testValue = 3;
       
@@ -53,25 +45,34 @@ describe('scribbler', function() {
     });
   });
   
+  describe('initPoint', function() {
+    it('should set value only once', function() {
+      scribbler.magnitude(0); //so draw doesn't affect the point
+      
+      var point1 = new p5.Vector(1, 2);
+      scribbler.initPoint(point1).draw();
+      
+      expect(sketch.line).toHaveBeenCalledWith(point1.x, point1.y, point1.x, point1.y);
+      expect(sketch.line.calls.length).toEqual(1);
+      
+      var point2 = new p5.Vector(3, 4);
+      scribbler.initPoint(point2).draw();
+      
+      expect(sketch.line).toHaveBeenCalledWith(point1.x, point1.y, point1.x, point1.y);
+      expect(sketch.line.calls.length).toEqual(2);
+    });
+  });
+  
   describe('count', function() {
     it('should create the correct number of scribbles', function() {
-      var scribbler = scribblerFactory(sketch, {
-        count: _.constant(11)
-      });
+      scribbler.count(11).draw();
       
-      var activeSpy = jasmine.createSpy('activeSpy').andReturn(false);
-      scribbler.active(activeSpy);
-      
-      scribbler.draw();
-      
-      expect(activeSpy.calls.length).toEqual(11);
+      expect(sketch.line.calls.length).toEqual(11);
     });
   });
   
   describe('active', function() {
     it('should set value', function() {
-      var scribbler = scribblerFactory(sketch);
-      
       expect(scribbler.active(false).calc('active')).toBe(false);
       
       expect(scribbler.active(true).calc('active')).toBe(true);
@@ -80,8 +81,6 @@ describe('scribbler', function() {
   
   describe('angle', function() {
     it('should set value', function() {
-      var scribbler = scribblerFactory(sketch);
-      
       expect(scribbler.angle(3.14).calc('angle')).toBe(3.14);
       
       expect(scribbler.angle(1.57).calc('angle')).toBe(1.57);
@@ -90,8 +89,6 @@ describe('scribbler', function() {
   
   describe('magnitude', function() {
     it('should set value', function() {
-      var scribbler = scribblerFactory(sketch);
-      
       expect(scribbler.magnitude(5).calc('magnitude')).toBe(5);
       
       expect(scribbler.magnitude(25).calc('magnitude')).toBe(25);

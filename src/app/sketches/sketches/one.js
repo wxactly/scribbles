@@ -14,14 +14,14 @@ angular.module('scribbles.sketches')
       sketch.background(255);
       sketch.stroke(0);
 
-      scribbler = scribblerFactory(sketch, {
-        x: _.partial(sketch.random, 0, sketch.width),
-        y: _.partial(sketch.random, 0, sketch.height),
-        count: _.constant(128)
-      })
-      .active(function() {
-        return sketch.frameCount < 128;
-      });
+      scribbler = scribblerFactory(sketch)
+        .initPoint(function() {
+          return sketch.createVector(sketch.random(sketch.width), sketch.random(sketch.height));
+        })
+        .count(128)
+        .active(function() {
+          return sketch.frameCount < 128;
+        });
     };
 
     sketch.draw = function() {
