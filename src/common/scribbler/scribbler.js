@@ -3,6 +3,7 @@
  * TODO: factor out the sketch?
  * TODO: rename angle -> heading
  * TODO: rename scribble/scribbles?
+ * TODO: add stroke config
  */
 angular.module('scribbler', [])
 .factory('scribblerFactory', function(p5) {
@@ -21,7 +22,7 @@ angular.module('scribbler', [])
   }
   
   function draw() {
-    var count = this.calc('count');
+    var count = this.sketch.floor(this.calc('count'));
     if(this.scribbles.length < count) {
       this.scribbles = this.scribbles.concat(_.times(count - this.scribbles.length, _.create));
     }

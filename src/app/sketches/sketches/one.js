@@ -27,5 +27,9 @@ angular.module('scribbles.sketches')
     sketch.draw = function() {
       scribbler.draw();
     };
+    
+    sketch.mousePressed = function() {
+      sketch.noLoop(true);
+    };
   };
 });
