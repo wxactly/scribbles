@@ -7,12 +7,10 @@ angular.module('scribbles.sketches')
 .factory('one', function(p5, scribblerFactory) {
   return function(sketch) {
     var scribbler;
-  
+
     sketch.setup = function() {
       sketch.createCanvas(512, 512);
-      
       sketch.background(255);
-      sketch.stroke(0);
 
       scribbler = scribblerFactory(sketch)
         .initPoint(function() {
