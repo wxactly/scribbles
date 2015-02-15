@@ -1,7 +1,6 @@
 /**
  * TODO: documentation
  * TODO: factor out the sketch?
- * TODO: rename scribble/scribbles?
  * TODO: add stroke config
  */
 angular.module('scribbler', [])
@@ -22,29 +21,27 @@ angular.module('scribbler', [])
   
   function draw() {
     var count = this.sketch.floor(this.calc('count'));
-    if(this.scribbles.length < count) {
-      this.scribbles = this.scribbles.concat(_.times(count - this.scribbles.length, _.create));
+    if(this.points.length < count) {
+      this.points = this.points.concat(_.times(count - this.points.length, function() {
+        return this.calc('initPoint');
+      }, this));
     }
-    else if(this.scribbles.length > count) {
-      this.scribbles = _.dropRight(this.scribbles, this.scribbles.length - count);
+    else if(this.points.length > count) {
+      this.points = _.dropRight(this.points, this.points.length - count);
     }
     
-    var activeScribbles = _.filter(this.scribbles, function(scribble) {
+    var activePoints = _.filter(this.points, function(point) {
       return this.calc('active');
     }, this);
-    
-    activeScribbles.forEach(function(scribble) {
-      if(!scribble.point) {
-        scribble.point = this.calc('initPoint');
-      }
-      
+
+    activePoints.forEach(function(point) {
       var offset = p5.Vector.fromAngle(this.calc('heading'))
         .setMag(this.calc('magnitude'));
-      var nextPoint = p5.Vector.add(scribble.point, offset);
+      var nextPoint = p5.Vector.add(point, offset);
 
-      this.sketch.line(scribble.point.x, scribble.point.y, nextPoint.x, nextPoint.y);
+      this.sketch.line(point.x, point.y, nextPoint.x, nextPoint.y);
 
-      scribble.point = nextPoint;
+      point.set(nextPoint);
     }, this);
     
     return this;
@@ -63,7 +60,7 @@ angular.module('scribbler', [])
   return function(sketch, properties) {
     var obj = Object.create(scribbler);
     obj.attributes = {};
-    obj.scribbles = [];
+    obj.points = [];
     
     obj.sketch = sketch;
     
