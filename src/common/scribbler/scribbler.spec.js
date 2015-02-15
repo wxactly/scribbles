@@ -73,10 +73,22 @@ describe('scribbler', function() {
   });
   
   describe('active', function() {
-    it('should set value', function() {
-      expect(scribbler.active(false).calc('active')).toBe(false);
-      
-      expect(scribbler.active(true).calc('active')).toBe(true);
+    it('should only draw when active', function() {
+      scribbler.active(false);
+
+      expect(scribbler.calc('active')).toBe(false);
+
+      scribbler.draw();
+
+      expect(sketch.line).not.toHaveBeenCalled();
+
+      scribbler.active(true);
+
+      expect(scribbler.calc('active')).toBe(true);
+
+      scribbler.draw();
+
+      expect(sketch.line).toHaveBeenCalled();
     });
   });
   
