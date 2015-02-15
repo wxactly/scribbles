@@ -79,11 +79,11 @@ describe('scribbler', function() {
     });
   });
   
-  describe('angle', function() {
+  describe('heading', function() {
     it('should set value', function() {
-      expect(scribbler.angle(3.14).calc('angle')).toBe(3.14);
+      expect(scribbler.heading(3.14).calc('heading')).toBe(3.14);
       
-      expect(scribbler.angle(1.57).calc('angle')).toBe(1.57);
+      expect(scribbler.heading(1.57).calc('heading')).toBe(1.57);
     });
   });
   

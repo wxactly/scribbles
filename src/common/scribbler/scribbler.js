@@ -1,7 +1,6 @@
 /**
  * TODO: documentation
  * TODO: factor out the sketch?
- * TODO: rename angle -> heading
  * TODO: rename scribble/scribbles?
  * TODO: add stroke config
  */
@@ -39,7 +38,7 @@ angular.module('scribbler', [])
         scribble.point = this.calc('initPoint');
       }
       
-      var offset = p5.Vector.fromAngle(this.calc('angle'))
+      var offset = p5.Vector.fromAngle(this.calc('heading'))
         .setMag(this.calc('magnitude'));
       var nextPoint = p5.Vector.add(scribble.point, offset);
 
@@ -55,7 +54,7 @@ angular.module('scribbler', [])
     initPoint: _.partial(setAttribute, 'initPoint'),
     count: _.partial(setAttribute, 'count'),
     active: _.partial(setAttribute, 'active'),
-    angle: _.partial(setAttribute, 'angle'),
+    heading: _.partial(setAttribute, 'heading'),
     magnitude: _.partial(setAttribute, 'magnitude'),
     calc: calc,
     draw: draw
@@ -72,7 +71,7 @@ angular.module('scribbler', [])
       .initPoint(sketch.createVector, sketch.width / 2, sketch.height / 2)
       .count(1)
       .active(true)
-      .angle(sketch.random, -sketch.PI, sketch.PI)
+      .heading(sketch.random, -sketch.PI, sketch.PI)
       .magnitude(16);
   };
 });
