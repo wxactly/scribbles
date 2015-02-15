@@ -7,8 +7,9 @@ describe('scribbler', function() {
 
   beforeEach(inject(function(scribblerFactory, p5) {
     sketch = new p5(angular.noop);
+    spyOn(sketch, 'stroke');
     spyOn(sketch, 'line');
-    
+
     scribbler = scribblerFactory(sketch);
   }));
 
@@ -86,12 +87,25 @@ describe('scribbler', function() {
       expect(scribbler.heading(1.57).calc('heading')).toBe(1.57);
     });
   });
-  
+
   describe('magnitude', function() {
     it('should set value', function() {
       expect(scribbler.magnitude(5).calc('magnitude')).toBe(5);
-      
+
       expect(scribbler.magnitude(25).calc('magnitude')).toBe(25);
+    });
+  });
+
+  describe('stroke', function() {
+    it('should call sketch.stroke with a test color', function() {
+      var testColor = sketch.color(10, 20, 30);
+      scribbler.stroke(testColor);
+
+      expect(scribbler.calc('stroke')).toBe(testColor);
+
+      scribbler.draw();
+
+      expect(sketch.stroke).toHaveBeenCalledWith(testColor);
     });
   });
 });

@@ -1,7 +1,5 @@
 /**
  * TODO: documentation
- * TODO: factor out the sketch?
- * TODO: add stroke config
  */
 angular.module('scribbler', [])
 .factory('scribblerFactory', function(p5) {
@@ -39,6 +37,7 @@ angular.module('scribbler', [])
         .setMag(this.calc('magnitude'));
       var nextPoint = p5.Vector.add(point, offset);
 
+      this.sketch.stroke(this.calc('stroke'));
       this.sketch.line(point.x, point.y, nextPoint.x, nextPoint.y);
 
       point.set(nextPoint);
@@ -53,6 +52,7 @@ angular.module('scribbler', [])
     active: _.partial(setAttribute, 'active'),
     heading: _.partial(setAttribute, 'heading'),
     magnitude: _.partial(setAttribute, 'magnitude'),
+    stroke: _.partial(setAttribute, 'stroke'),
     calc: calc,
     draw: draw
   };
@@ -69,6 +69,7 @@ angular.module('scribbler', [])
       .count(1)
       .active(true)
       .heading(sketch.random, -sketch.PI, sketch.PI)
-      .magnitude(16);
+      .magnitude(16)
+      .stroke(sketch.color(0));
   };
 });
