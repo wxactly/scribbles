@@ -12,11 +12,12 @@ angular.module('scribbles.sketches')
       sketch.createCanvas(512, 512);
       sketch.background(255);
 
-      scribbler = scribblerFactory(sketch)
-        .initPoint(function() {
+      scribbler = scribblerFactory(sketch, {
+        count: 128,
+        point: function() {
           return sketch.createVector(sketch.random(sketch.width), sketch.random(sketch.height));
-        })
-        .count(128)
+        }
+      })
         .active(function() {
           return sketch.frameCount < 128;
         });
