@@ -4,20 +4,6 @@
  */
 angular.module('scribbler', [])
   .factory('scribblerFactory', function(p5, scribbleEdgeFactory) {
-    function setAttribute(attribute, value) {
-      if(_.isFunction(value)) {
-        this.attributes[attribute] = _.partial.apply(null, _.rest(arguments));
-      }
-      else {
-        this.attributes[attribute] = _.constant(value);
-      }
-      return this;
-    }
-
-    function calc(attribute) {
-      return this.attributes[attribute]();
-    }
-
     function draw() {
       //update
       var count = this.sketch.floor(this.calc('count'));
@@ -54,24 +40,49 @@ angular.module('scribbler', [])
     }
 
     var scribbler = {
-      initPoint: _.partial(setAttribute, 'initPoint'),
-      count: _.partial(setAttribute, 'count'),
-      active: _.partial(setAttribute, 'active'),
-      heading: _.partial(setAttribute, 'heading'),
-      magnitude: _.partial(setAttribute, 'magnitude'),
-      stroke: _.partial(setAttribute, 'stroke'),
-      calc: calc,
       draw: draw
     };
 
-    return function(sketch, properties) {
-      var obj = Object.create(scribbler);
-      obj.attributes = {};
-      obj.edges = [];
+    function defineAttribute(attributes, attribute, value) {
+      if(_.isFunction(value)) {
+        attributes[attribute] = _.partial.apply(null, _.drop(arguments, 2));
+      }
+      else {
+        attributes[attribute] = _.constant(value);
+      }
+    }
 
-      obj.sketch = sketch;
+    function calculateAttribute(attributes, attribute) {
+      return attributes[attribute](); //.apply(this);
+    }
 
-      return obj
+    var attributeNames = [
+      'initPoint',
+      'count',
+      'active',
+      'heading',
+      'magnitude',
+      'stroke'
+    ];
+
+    return function(sketch) {
+      var attributes = {};
+
+      var attributeMethods = _.map(attributeNames, function(attribute) {
+        var setAttribute = _.partial(defineAttribute, attributes, attribute);
+        return function() {
+          setAttribute.apply(this, arguments);
+          return this;
+        };
+      });
+
+      var properties = _.assign(_.zipObject(attributeNames, attributeMethods), {
+        edges: [],
+        sketch: sketch,
+        calc: _.partial(calculateAttribute, attributes)
+      });
+
+      return _.create(scribbler, properties)
         .initPoint(sketch.createVector, sketch.width / 2, sketch.height / 2)
         .count(1)
         .active(true)
@@ -80,7 +91,7 @@ angular.module('scribbler', [])
         .stroke(sketch.color(0));
     };
   })
-  .service('scribbleEdgeFactory', function() {
+  .service('scribbleEdgeFactory', function(p5) {
     var scribbleEdge = {
       nextPoint: nextPoint
     };
